@@ -10,6 +10,13 @@ def main():
     temp = test.searchBarScrape("55015")
     print(temp)
 
+#Tests if the correct item data is given and recieved
+def testCase1():
+    return None
+
+#Test if inaccurate item data returns the correct errors
+def testCase2():
+    return None
 
 def createVendorList():
     obj1 = VendorObject("NAPOLEON","https://www.napoleon.com","https://www.napoleon.com/en/ca/barbecues/product-search?search= _xxx_&sort=search_api_relevance&order=desc")
