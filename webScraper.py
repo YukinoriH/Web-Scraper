@@ -11,13 +11,28 @@ def main(fileName):
     vendorList = createVendorList(vendorDF)
     readAndCreateExcelFile(excelFile,vendorList)
 
+def searchVendorList(vendor,vendorList):
+    for ven in vendorList:
+        if(ven.venName == vendor):
+            return ven
+    return -1
+
 def createVendorList(vendorDF):
     availableVendors = []
     for index, vendor in vendorDF.iterrows():
-        tempVendorObj = vendorObj(index['Vendor'],index['Website'],index['SearchURL'])
-        tempVendorObj.searchBarElements(index['searchID'],index['searchWrapper'],index['searchItem'])
-        tempVendorObj.itemPageElements(index['imageWrapper'],index['imageSrc'],index['descWrapper'],index['descSrc'])
-        availableVendors.append(tempVendorObj)
+        availableVendors.append(vendorObj.VendorObject(
+                                            vendor['Vendor'],
+                                            vendor['Website'],
+                                            vendor['SearchURL'],
+                                            vendor['searchID'],
+                                            vendor['searchWrapper'],
+                                            vendor['searchItem'],
+                                            vendor['imageWrapper'],
+                                            vendor['imageSrc'],
+                                            vendor['descWrapper'],
+                                            vendor['descSrc']
+                                        ))
+    return availableVendors
 
 '''
 Using the website's serach methods, finds the most relevant item given the parameter.
@@ -27,33 +42,33 @@ list[0] -> Image & list[1] -> Description.
 Any errors return empty elements in the list
 '''
 def webScrapeItem(searchNum,scrapeData):
-    requestURL = self.venURL.replace("_xxx_",searchNum)
+    imgAndDesc = ["",""]
+    requestURL = scrapeData.venURL.replace("_xxx_",searchNum)
     requestPage = requests.get(requestURL)
     pageContent = BeautifulSoup(requestPage.content, "html.parser")
 
-    results = pageContent.find(id = self.searchID)
-    job_elements = results.find_all("div", class_ = self.searchWrapper)
+    results = pageContent.find(id = scrapeData.searchID)
+    job_elements = results.find_all("div", class_ = scrapeData.searchWrapper)
     for job_element in job_elements:
-        findURL = job_element.find("a",class_ = self.searchItem)
+        findURL = job_element.find("a",class_ = scrapeData.searchItem)
         productURL = findURL["href"]
-        itemURL = (self.venWebsite + productURL)
+        itemURL = (scrapeData.venWebsite + productURL)
 
-    imgAndDesc = ["",""]
     try:
         page = requests.get(itemURL)
     except:
         return imgAndDesc
     soup = BeautifulSoup(page.content, "html.parser")
 
-    imageTag = soup.find('div', class_= self.imageWrapper)
+    imageTag = soup.find('div', class_= scrapeData.imageWrapper)
     image = imageTag.find('img')
     try:
-        imgAndDesc[0] = (image[self.imageSrc])
+        imgAndDesc[0] = (image[scrapeData.imageSrc])
     except:
         return imgAndDesc
-    descTag = soup.find('section', class_= self.descWrapper)
+    descTag = soup.find('section', class_= scrapeData.descWrapper)
     try:
-        imgAndDesc[1] = (descTag.find(self.descSrc))
+        imgAndDesc[1] = (descTag.find(scrapeData.descSrc))
     except:
         return imgAndDesc
 
@@ -68,12 +83,18 @@ def readAndCreateExcelFile(excelDF,vendorList):
         VendorArray.append(row['Vendor'])
         DisplayName.append(row['Display Name'])
         PartNumber.append(row['Part Number'])
-        # scrapeData = vendorList.loc[df['Vendor'] == row['Vendor']]
-        imgAndDesc = webScrapeItem(row['Part Number'],scrapeData)
+
+        scrapeData = searchVendorList(row['Vendor'],vendorList)
+        if(scrapeData == -1):
+            imgAndDesc = ["",""]
+        else:
+            #imgAndDesc = webScrapeItem(row['Part Number'],scrapeData)
+            imgAndDesc = ["",""]
+
         imageURLArray.append(imgAndDesc[0])
         DescArray.append(imgAndDesc[1])
 
-    dataDict = {'Vendor': VendorArray, 'Display Name': DisplayName,'New Name': PartNumber, 'Image': imageURLArray, 'Description': DescArray}
+    dataDict = {'Vendor': VendorArray, 'Display Name': DisplayName,'Part Number': PartNumber, 'Image': imageURLArray, 'Description': DescArray}
     ExcelReadWrite.writeExcelFile(IDArray,dataDict,"WebScrapedItems","UpdatedList")
 
 
