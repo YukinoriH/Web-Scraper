@@ -1,14 +1,20 @@
 from vendorObj import *
+import webScraper
 import requests
 from bs4 import BeautifulSoup
 
 availableVendors = []
 
 def main():
-    createVendorList()
-    test = availableVendors[0]
-    temp = test.searchBarScrape("55015")
-    print(temp)
+    testInput = "C:\\Users\\yhayashi\\Documents\\Yuki's Folder\\Python\\Web Scraper\\itemList.xlsx"
+    fileLoc = testInput.split("\\")
+    inputFile = fileLoc[len(fileLoc)-1].split(".")
+    print(inputFile[0])
+    webScraper.startWebScrape(inputFile[0])
+    #createVendorList()
+    #test = availableVendors[0]
+    #temp = test.searchBarScrape("55015")
+
 
 #Tests if the correct item data is given and recieved
 def testCase1():

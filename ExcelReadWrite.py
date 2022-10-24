@@ -1,12 +1,11 @@
 import pandas
-import sys
 
 #Read Excel File and returns DataFrame
 def readExcelFile(excelInput):
     try:
         excelFile = pandas.ExcelFile(excelInput + ".xlsx")
     except FileNotFoundError as excelErr:
-        return None #TODO return proper error
+        return excelErr #TODO return proper error
 
     excelDF = pandas.read_excel(excelFile)
     return(excelDF)

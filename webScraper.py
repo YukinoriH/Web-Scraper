@@ -1,13 +1,15 @@
 import vendorObj
 import ExcelReadWrite
+import gui
 import pandas
 import requests
 import sys
+import os
 from bs4 import BeautifulSoup
 
-def main(fileName):
+def startWebScrape(fileName,vendorList):
     excelFile = ExcelReadWrite.readExcelFile(fileName)
-    vendorDF = ExcelReadWrite.readExcelFile("vendorList")
+    vendorDF = ExcelReadWrite.readExcelFile(vendorList)
     vendorList = createVendorList(vendorDF)
     readAndCreateExcelFile(excelFile,vendorList)
 
@@ -78,7 +80,11 @@ def readAndCreateExcelFile(excelDF,vendorList):
 
     IDArray,DisplayName,PartNumber,VendorArray,imageURLArray,DescArray = ([] for i in range(6))
     imgAndDesc = []
+    start = 0
+    DFcount = len(excelDF)
+    
     for index, row in excelDF.iterrows():
+        gui.progressMeter(start+1,DFcount)
         IDArray.append(row['Internal ID'])
         VendorArray.append(row['Vendor'])
         DisplayName.append(row['Display Name'])
@@ -96,7 +102,3 @@ def readAndCreateExcelFile(excelDF,vendorList):
 
     dataDict = {'Vendor': VendorArray, 'Display Name': DisplayName,'Part Number': PartNumber, 'Image': imageURLArray, 'Description': DescArray}
     ExcelReadWrite.writeExcelFile(IDArray,dataDict,"WebScrapedItems","UpdatedList")
-
-
-if __name__ == "__main__":
-    main(sys.argv[1])
