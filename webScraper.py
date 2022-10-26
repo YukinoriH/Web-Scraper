@@ -80,11 +80,8 @@ def readAndCreateExcelFile(excelDF,vendorList):
 
     IDArray,DisplayName,PartNumber,VendorArray,imageURLArray,DescArray = ([] for i in range(6))
     imgAndDesc = []
-    start = 0
-    DFcount = len(excelDF)
-    
+
     for index, row in excelDF.iterrows():
-        gui.progressMeter(start+1,DFcount)
         IDArray.append(row['Internal ID'])
         VendorArray.append(row['Vendor'])
         DisplayName.append(row['Display Name'])

@@ -1,5 +1,7 @@
 import PySimpleGUI as pGUI
+import threading
 import webScraper
+import time
 import re
 
 appTitle = "Web Scraper"
@@ -16,11 +18,12 @@ def main():
         [pGUI.Button('Enter'), pGUI.Button('Exit')]
       ],
       [
-        pGUI.Output(size=(30, 10), key="-ITEM LIST-")
+        pGUI.Multiline(size=(30, 10), autoscroll=True, key="-ITEM LIST-")
       ]
     ]
 
     inputWindow = pGUI.Window(appTitle,inputLayout,resizable = True)
+    #threading.Thread(target=errorMsg,args=("",inputWindow),daemon=True).start()
 
     while True:
         event, values = inputWindow.read(timeout=100)
@@ -32,18 +35,19 @@ def main():
             else:
                 excelLoc = values["-READEXCEL-"].split("\\")
                 excelFile = excelLoc[len(excelLoc)-1].split(".")
-
                 vendorLoc = values["-VENDORS-"].split("\\")
                 vendorFile = vendorLoc[len(vendorLoc)-1].split(".")
 
+                errorMsg("Scraping List...",inputWindow)
                 webScraper.startWebScrape(excelFile[0],vendorFile[0])
-                #for i in range(1,10000):
-                    #pGUI.one_line_progress_meter('My Meter', i+1, 10000, 'key','Optional message')
+                #threading.Thread(target=webScraper.startWebScrape,args=(excelFile[0],vendorFile[0]),daemon=True).start()
+                errorMsg("Completed Scraping List!",inputWindow)
 
     inputWindow.close()
 
-def progressMeter(cur,end):
-    pGUI.one_line_progress_meter('My Meter', cur, end, 'key','Optional message')
+def errorMsg(error,Window):
+    Window["-ITEM LIST-"].print(error)
+    #Window.write_event_value("-ITEM LIST-",error)
 
 if __name__ == "__main__":
     main()
