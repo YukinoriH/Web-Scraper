@@ -86,7 +86,6 @@ def readAndCreateExcelFile(excelDF,vendorList,inputWindow):
     Min = 0
 
     for index, row in excelDF.iterrows():
-        time.sleep(0.5)
         Min = Min + 1
         gui.messageBox(progressBar(Min,Max),inputWindow,1)
         IDArray.append(row['Internal ID'])
@@ -98,8 +97,8 @@ def readAndCreateExcelFile(excelDF,vendorList,inputWindow):
         if(scrapeData == -1):
             imgAndDesc = ["",""]
         else:
-            #imgAndDesc = webScrapeItem(row['Part Number'],scrapeData)
-            imgAndDesc = ["",""]
+            imgAndDesc = webScrapeItem(row['Part Number'],scrapeData)
+            #imgAndDesc = ["",""]
 
         imageURLArray.append(imgAndDesc[0])
         DescArray.append(imgAndDesc[1])

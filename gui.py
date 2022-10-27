@@ -7,11 +7,11 @@ appTitle = "Web Scraper"
 
 def main():
 
-    pGUI.theme('Light Blue 2')
+    pGUI.theme('LightGrey3')
 
     inputLayout = [
       [
-        [pGUI.Text('Please select the correct excel files')],
+        [pGUI.Text('Please select the correct Excel files')],
         [pGUI.Text('Scrape List:',size=(8,1)),pGUI.Input(), pGUI.FileBrowse(key="-READEXCEL-")],
         [pGUI.Text('Vendor List:',size=(8,1)),pGUI.Input(), pGUI.FileBrowse(key="-VENDORS-")],
         [pGUI.Button('Enter'), pGUI.Button('Exit')]
@@ -22,7 +22,6 @@ def main():
     ]
 
     inputWindow = pGUI.Window(appTitle,inputLayout,resizable = True)
-
 
     while True:
         event, values = inputWindow.read(timeout=100)
