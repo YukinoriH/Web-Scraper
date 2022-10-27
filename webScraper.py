@@ -1,17 +1,19 @@
 import vendorObj
 import ExcelReadWrite
 import gui
+import time
+import threading
 import pandas
 import requests
 import sys
 import os
 from bs4 import BeautifulSoup
 
-def startWebScrape(fileName,vendorList):
+def startWebScrape(fileName,vendorList,inputWindow):
     excelFile = ExcelReadWrite.readExcelFile(fileName)
     vendorDF = ExcelReadWrite.readExcelFile(vendorList)
     vendorList = createVendorList(vendorDF)
-    readAndCreateExcelFile(excelFile,vendorList)
+    threading.Thread(target=readAndCreateExcelFile,args=(excelFile,vendorList,inputWindow),daemon=True).start()
 
 def searchVendorList(vendor,vendorList):
     for ven in vendorList:
@@ -76,12 +78,17 @@ def webScrapeItem(searchNum,scrapeData):
 
     return imgAndDesc
 
-def readAndCreateExcelFile(excelDF,vendorList):
+def readAndCreateExcelFile(excelDF,vendorList,inputWindow):
 
     IDArray,DisplayName,PartNumber,VendorArray,imageURLArray,DescArray = ([] for i in range(6))
     imgAndDesc = []
+    Max = len(excelDF)
+    Min = 0
 
     for index, row in excelDF.iterrows():
+        time.sleep(0.5)
+        Min = Min + 1
+        gui.messageBox(progressBar(Min,Max),inputWindow,1)
         IDArray.append(row['Internal ID'])
         VendorArray.append(row['Vendor'])
         DisplayName.append(row['Display Name'])
@@ -99,3 +106,11 @@ def readAndCreateExcelFile(excelDF,vendorList):
 
     dataDict = {'Vendor': VendorArray, 'Display Name': DisplayName,'Part Number': PartNumber, 'Image': imageURLArray, 'Description': DescArray}
     ExcelReadWrite.writeExcelFile(IDArray,dataDict,"WebScrapedItems","UpdatedList")
+    gui.messageBox("Completed Scraping!",inputWindow,0)
+
+def progressBar(count, total):
+    barLength = 50
+    filled = int(round(barLength * count / float(total)))
+    percent = round(100.0 * count / float(total), 1)
+    bar = '|' * filled + '-' * (barLength - filled)
+    return('%s%s...[%s]\r\n' % (percent, '%', bar))

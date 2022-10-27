@@ -1,5 +1,4 @@
 import PySimpleGUI as pGUI
-import threading
 import webScraper
 import time
 import re
@@ -18,12 +17,12 @@ def main():
         [pGUI.Button('Enter'), pGUI.Button('Exit')]
       ],
       [
-        pGUI.Multiline(size=(30, 10), autoscroll=True, key="-ITEM LIST-")
+        pGUI.Multiline(size=(60, 5), autoscroll=True, horizontal_scroll=False, key="-ITEM LIST-")
       ]
     ]
 
     inputWindow = pGUI.Window(appTitle,inputLayout,resizable = True)
-    #threading.Thread(target=errorMsg,args=("",inputWindow),daemon=True).start()
+
 
     while True:
         event, values = inputWindow.read(timeout=100)
@@ -37,17 +36,15 @@ def main():
                 excelFile = excelLoc[len(excelLoc)-1].split(".")
                 vendorLoc = values["-VENDORS-"].split("\\")
                 vendorFile = vendorLoc[len(vendorLoc)-1].split(".")
-
-                errorMsg("Scraping List...",inputWindow)
-                webScraper.startWebScrape(excelFile[0],vendorFile[0])
-                #threading.Thread(target=webScraper.startWebScrape,args=(excelFile[0],vendorFile[0]),daemon=True).start()
-                errorMsg("Completed Scraping List!",inputWindow)
+                webScraper.startWebScrape(excelFile[0],vendorFile[0],inputWindow)
 
     inputWindow.close()
 
-def errorMsg(error,Window):
-    Window["-ITEM LIST-"].print(error)
-    #Window.write_event_value("-ITEM LIST-",error)
+def messageBox(message,Window,type):
+    if(type == 0):
+        Window["-ITEM LIST-"].print(message)
+    else:
+        Window["-ITEM LIST-"].update(message)
 
 if __name__ == "__main__":
     main()
