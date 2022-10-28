@@ -2,7 +2,7 @@
 
 This is a web scraper used to export the image link and stock description into an excel file.
 
-![WindowEx1](/images/window_ex1.jpg "Screenshot Example")
+![WindowEx1](/images/window_ex1.JPG "Screenshot Example")
 
 This application requires 2 separate excel files with the following columns.
 * A list of items to scrape:
@@ -22,7 +22,7 @@ This application requires 2 separate excel files with the following columns.
   * DescWrapper
   * DescSrc
 
-##Python Libraries Used
+## Python Libraries Used
 * BeautifulSoup
 * pandas
 * PySimpleGUI
